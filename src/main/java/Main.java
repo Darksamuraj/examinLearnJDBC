@@ -12,23 +12,24 @@ public class Main {
 
         public static void main(String[] args) throws SQLException {
             DBProcessor db=new DBProcessor();
+            String query ="Select * from mydbtest.users";
+
+            String insert = "insert into mydbtest.users (name, age, email) values (?, ?, ?)";
+
             Connection connection = db.getConnection(URL,USERNAME,PASSWORD);
-            String query="Select * from mydbtest.users";
-            Statement statement=connection.createStatement();
-            ResultSet resSet = statement.executeQuery(query);
-            while (resSet.next()){
-                int id;
-                String name;
-                int age;
-                String email;
-                id=resSet.getInt("users.id");
-                name=resSet.getString("users.name");
-                age=resSet.getInt("users.age");
-                email=resSet.getString("users.email");
-                Users user=new Users(id,name,age,email);
-                System.out.println(user);
+
+            PreparedStatement preparedInsert = connection.prepareStatement(insert);
+            preparedInsert.setString(1,"Kolya");
+            preparedInsert.setInt(2,25);
+            preparedInsert.setString(3,"lolya@gmail.ru");
+            preparedInsert.execute();
+
+            PreparedStatement preparedStatement=connection.prepareStatement(query);
+            ResultSet resSet=preparedStatement.executeQuery();
+            while(resSet.next()){
+                System.out.println(resSet.getInt("id")+"    "+resSet.getString("name"));
             }
-            statement.close();
+            preparedStatement.close();
             connection.close();
         }
     }
